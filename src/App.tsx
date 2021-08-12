@@ -1,7 +1,7 @@
 import * as React from "react";
 import styled from "styled-components";
 import WalletConnect from "@walletconnect/client";
-import QRCodeModal from "@walletconnect/qrcode-modal";
+import QRCodeModal from "algorand-walletconnect-qrcode-modal";
 import { IInternalEvent } from "@walletconnect/types";
 import { formatJsonRpcRequest } from "@json-rpc-tools/utils";
 import algosdk from "algosdk";
@@ -333,6 +333,8 @@ class App extends React.Component<unknown, IAppState> {
       const request = formatJsonRpcRequest("algo_signTxn", requestParams);
       const result: Array<string | null> = await connector.sendCustomRequest(request);
 
+      console.log("Raw response:", result);
+
       const indexToGroup = (index: number) => {
         for (let group = 0; group < txnsToSign.length; group++) {
           const groupLength = txnsToSign[group].length;
@@ -553,12 +555,12 @@ class App extends React.Component<unknown, IAppState> {
                   <SRow key={index}>
                     <SKey>{`Atomic group ${index}`}</SKey>
                     <SValue>
-                      {signedTxns.map(txn => (
-                        <>
+                      {signedTxns.map((txn, txnIndex) => (
+                        <div key={txnIndex}>
                           {!!txn?.txID && <p>TxID: {txn.txID}</p>}
                           {!!txn?.signature && <p>Sig: {txn.signature}</p>}
                           {!!txn?.signingAddress && <p>AuthAddr: {txn.signingAddress}</p>}
-                        </>
+                        </div>
                       ))}
                     </SValue>
                   </SRow>
